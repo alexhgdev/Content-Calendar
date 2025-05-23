@@ -9,7 +9,7 @@ const openai = new OpenAI({
 
 export async function POST(req: Request) {
     try {
-        const { brandDescription, tone, frequency } = await req.json();
+        const { brandDescription, tone, frequency, temperature = 0.7 } = await req.json();
 
         if (!brandDescription || !tone || !frequency) {
             return NextResponse.json(
@@ -35,6 +35,7 @@ export async function POST(req: Request) {
       3. Hook (first line spoken)
       4. Caption
       5. Suggested hashtags (5-7 relevant hashtags)
+      6. Content type (one of: "Educational", "Entertainment", "Behind the Scenes", "Product Showcase", "Trending", "User Generated", "Testimonial")
       
       Format the response as a JSON object with the following structure:
       {
@@ -44,7 +45,8 @@ export async function POST(req: Request) {
             "videoIdea": "Brief description",
             "hook": "First line spoken",
             "caption": "Caption text",
-            "hashtags": ["tag1", "tag2", "tag3", "tag4", "tag5"]
+            "hashtags": ["tag1", "tag2", "tag3", "tag4", "tag5"],
+            "contentType": "Content type from the list above"
           },
           ...
         ]
@@ -69,6 +71,7 @@ export async function POST(req: Request) {
                 }
             ],
             response_format: { type: "json_object" },
+            temperature: temperature,
         });
 
         const responseContent = completion.choices[0].message.content;
